@@ -7,14 +7,23 @@ Original file is located at
     https://colab.research.google.com/drive/1qM5u5yvsm_bQefkcbE3BbSbfaq6Cgysa
 """
 
+# Commented out IPython magic to ensure Python compatibility.
+# %run ../input/python-recipes/dhtml.py
+dhtml('File Writing')
+
 # %%writefile numpy_sage.py
 from IPython.core.display import display,HTML
 import random,numpy as np
 
-def sage_list_plot(array,width,height,kw,kh):
+def sage_list_plot(array,labels=None,
+                   precision=8,
+                   width=650,height=700,
+                   kw=.0095,kh=0.0035):
     str_array=np.array2string(
-        array,precision=8,separator=',',
+        array,precision=precision,separator=',',
         suppress_small=True)
+    if labels==None: 
+        labels=[i+1 for i in range(len(array))]
     html_str="""<html><head><meta charset='utf-8'>"""+\
     """<script src='https://sagecell.sagemath.org/"""+\
     """static/embedded_sagecell.js'>"""+\
@@ -23,19 +32,21 @@ def sage_list_plot(array,width,height,kw,kh):
     """evalButtonText:'run',linked:true}); """+\
     """});</script></head>"""+\
     """<style>#array1.sagecell .CodeMirror-scroll {"""+\
-    """min-height:3em; max-height:7em;} """+\
+    """min-height:3em; max-height:5em;} """+\
     """.sagecell .CodeMirror-scroll {"""+\
-    """min-height:3em; max-height:10em;}</style><body>"""+\
+    """min-height:3em; max-height:11em;}</style><body>"""+\
     """<div class='plot' id='array1'><script type='text/x-sage'>"""+\
     """import numpy as np\n"""+\
     """array=np.array("""+str_array+""")\n"""+\
+    """labels="""+str(labels)+"""\n"""+\
     """</script></div><br/>"""+\
     """<div class='plot'><script type='text/x-sage'>"""+\
     """print('array dimensions:%s'%str(array.shape))\n"""+\
     """n=array.shape[0]\n"""+\
     """p=sum([list_plot(\n"""+\
-    """    array[i],color=hue(i/n),plotjoined=True,\n"""+\
-    """    marker='o',markersize=2,legend_label=i+1)\n"""+\
+    """    array[i],plotjoined=True,\n"""+\
+    """    color=hue(i/n),marker='o',markersize=2,\n"""+\
+    """    legend_label=labels[i])\n"""+\
     """       for i in range(n)])\n"""+\
     """p.show(figsize=("""+str(
         (np.round(kw*width,2),np.round(kh*height,2)))+\
@@ -50,10 +61,15 @@ def sage_list_plot(array,width,height,kw,kh):
            """ width="""+str(width+20)+"""></iframe></div>"""
     display(HTML(string))
     
-def sage_list_plot_min(array,width,height,kw,kh):
+def sage_list_plot_min(array,labels=None,
+                       precision=8,
+                       width=650,height=450,
+                       kw=.0095,kh=.0075):
     str_array=np.array2string(
-        array,precision=8,separator=',',
+        array,precision=precision,separator=',',
         suppress_small=True)
+    if labels==None: 
+        labels=[i+1 for i in range(len(array))]
     html_str="""<html><head><meta charset='utf-8'>"""+\
     """<script src='https://sagecell.sagemath.org/"""+\
     """static/embedded_sagecell.js'>"""+\
@@ -65,11 +81,13 @@ def sage_list_plot_min(array,width,height,kw,kh):
     """<div class='plot_min'><script type='text/x-sage'>"""+\
     """import numpy as np\n"""+\
     """array=np.array("""+str_array+""")\n"""+\
+    """labels="""+str(labels)+"""\n"""+\
     """print('array dimensions:%s'%str(array.shape))\n"""+\
     """n=array.shape[0]\n"""+\
     """p=sum([list_plot(\n"""+\
-    """    array[i],color=hue(i/n),plotjoined=True,\n"""+\
-    """    marker='o',markersize=2,legend_label=i+1)\n"""+\
+    """    array[i],plotjoined=True,\n"""+\
+    """    color=hue(i/n),marker='o',markersize=2,\n"""+\
+    """    legend_label=labels[i])\n"""+\
     """       for i in range(n)])\n"""+\
     """p.show(figsize=("""+str(
         (np.round(kw*width,2),np.round(kh*height,2)))+\
@@ -87,7 +105,82 @@ def sage_list_plot_min(array,width,height,kw,kh):
 # Commented out IPython magic to ensure Python compatibility.
 # %run numpy_sage.py
 
-sage_list_plot(np.random.rand(4,20),520,750,.0095,.004)
+dhtml('Example #1')
 
-sage_list_plot_min(np.random.rand(3,15),
-                   520,400,.0095,.0075)
+import bq_helper
+open_aq=bq_helper.BigQueryHelper(
+    active_project="bigquery-public-data",
+    dataset_name="openaq")
+open_aq.head("global_air_quality",3).T
+
+my_query="""
+SELECT country,pollutant,AVG(value) as avg_value
+FROM `bigquery-public-data.openaq.global_air_quality`
+WHERE unit='µg/m³' 
+GROUP BY country,pollutant
+ORDER BY country,pollutant
+"""
+pollutants=open_aq.query_to_pandas_safe(my_query)
+pollutants.head(10).T
+
+import pandas as pd,pylab as pl
+df_pollutants=pd.DataFrame(
+    index=list(set(pollutants['country'])), 
+    columns=list(set(pollutants['pollutant'])))
+df_pollutants=df_pollutants.fillna(0)
+for i in range(len(pollutants)):
+    index=pollutants.loc[i][0]
+    column=pollutants.loc[i][1]
+    df_pollutants[column][index]=pollutants.loc[i][2]
+data=df_pollutants[
+         (df_pollutants['no2']>0)&(df_pollutants['o3']>0)&
+         (df_pollutants['so2']>0)&
+         (df_pollutants['pm10']>0)&(df_pollutants['pm25']>0)]
+data=data[['no2','so2','o3','pm10','pm25']]
+data.plot.bar(figsize=(10,4));
+
+array=data.T.values
+labels=['no2','so2','o3','pm10','pm25']
+sage_list_plot(array,labels)
+
+dhtml('Example #2')
+
+import bq_helper
+bitcoin_blockchain=bq_helper.BigQueryHelper(
+    active_project="bigquery-public-data",
+    dataset_name="bitcoin_blockchain")
+
+my_query2="""
+WITH time AS (
+SELECT TIMESTAMP_MILLIS(timestamp) 
+AS trans_time,transaction_id
+FROM `bigquery-public-data.bitcoin_blockchain.transactions`)
+SELECT COUNT(transaction_id)/1000000 AS transactions,
+EXTRACT(MONTH FROM trans_time) AS month,
+EXTRACT(YEAR FROM trans_time) AS year
+FROM time
+GROUP BY year,month 
+ORDER BY year,month
+"""
+
+transactions_per_month=\
+bitcoin_blockchain.query_to_pandas_safe(
+    my_query2,max_gb_scanned=24)
+transactions_per_month.tail()
+
+transactions_per_month.shape
+
+import pandas as pd
+transactions_per_month2=pd.DataFrame(
+    index=range(1,13,1),columns=range(2014,2018,1))
+transactions_per_month2=transactions_per_month2.fillna(0)
+for i in range(2014,2018,1):
+    transactions_per_month2.loc[:,i]=\
+    transactions_per_month[transactions_per_month['year']==i]\
+    ["transactions"][:12].values
+transactions_per_month2.plot(figsize=(10,4));
+
+data2=transactions_per_month2.T.values
+labels2=['2014','2015','2016','2017']
+sage_list_plot_min(
+    array=data2,labels=labels2,precision=6)
