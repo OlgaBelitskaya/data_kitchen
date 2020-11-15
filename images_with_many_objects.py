@@ -20,14 +20,14 @@ def get_files(dir_name,files_pre):
                  if (f[-4:]=='.jpg' and files_pre==f[:-7])]
     return input_files
 
-N=15
+N=27
 dir_name='../input/object-detection/'
 files_pre_list=['letters_01_'+'%02d'%l+'_00' 
                 for l in range(N)]
 input_files_list=[]
 input_files_list+=[get_files(dir_name,files_pre_list[l])
                    for l in range(N)]
-input_files_list
+print(input_files_list)
 
 dhtml('Lists of Objects')
 
@@ -50,7 +50,7 @@ for l in range(N):
     img_list+=[curr_img_list]
     gray_img_list+=[curr_gray_img_list]
     edges_list+=[curr_edges_list]  
-[len(img_list[l]) for l in range(len(img_list))]
+print([len(img_list[l]) for l in range(len(img_list))])
 
 def display2images(img1,img2):
     fig=pl.figure(figsize=(10,10))
@@ -149,7 +149,7 @@ def create_zip(img_list,contours_list,files_pre_list):
     return files_list_out
 files_list_out=create_zip(
     img_list,contours_list,files_pre_list)
-[len(files_list_out[l]) for l in range(N)]
+print([len(files_list_out[l]) for l in range(N)])
 
 dhtml('The Result Checking')
 
@@ -325,7 +325,7 @@ dhtml('The Python Recipe')
 #             files_list_out+=[curr_file_list_out]
 #     return files_list_out
 # 
-# N=15
+# N=27
 # dir_name='../input/object-detection/'
 # files_pre_list=['letters_01_'+'%02d'%l+'_00' 
 #                 for l in range(N)]
