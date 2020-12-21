@@ -11,9 +11,10 @@ Original file is located at
 # %run ../input/python-recipes/dhtml.py
 dhtml('Creating Labeled and Measured Synthetic Images')
 
-import numpy as np,pandas as pd
+import imageio,numpy as np,pandas as pd
 import os,h5py,seaborn as sn,pylab as pl
 from skimage.transform import resize
+from IPython.display import display,HTML
 def randintcoord(img_size_out,img_size=1024):
     a=(.5+.1**6*np.random.randint(1,999999))*\
       np.random.choice([-1,1],1)[0]
@@ -51,7 +52,7 @@ pl.tight_layout();
 
 dhtml('Data Storing')
 
-num_images=800
+num_images=5000
 images=np.zeros((num_images,img_size,img_size,3),
                 dtype=np.float32)
 labels=np.zeros((num_images,),dtype=np.int32)
@@ -106,3 +107,27 @@ pl.title('labels',fontsize=20,color='#ff3300');
 pl.figure(figsize=(8,4)); pl.tight_layout()
 pl.scatter(targets[:,1],targets[:,0],s=1,color=colors);
 pl.title('targets',fontsize=20,color='#ff3300');
+
+dhtml('Animated Data')
+
+def interpolate_hypersphere(v1,v2,steps):
+    v1norm=np.linalg.norm(v1)
+    v2norm=np.linalg.norm(v2)
+    v2normalized=v2*(v1norm/v2norm)
+    vectors=[]
+    for step in range(steps):
+        interpolated=v1+(v2normalized-v1)*step/(steps-int(1))
+        interpolated_norm=np.linalg.norm(interpolated)
+        interpolated_normalized=\
+        interpolated*(v1norm/interpolated_norm)
+        vectors.append(interpolated_normalized)
+    return np.array(vectors)
+[img1,img2]=[randintcoord(256)[0] for i in range(2)]
+steps=60; file_name='pic.gif'
+imgs=np.vstack(
+    [interpolate_hypersphere(img1,img2,steps),
+     interpolate_hypersphere(img2,img1,steps)])
+imageio.mimsave(file_name,imgs)
+s1='<div id="imgs"><img src="'
+s2='" height="400" width="400"></img></div>'
+display(HTML(s1+file_name+s2))
