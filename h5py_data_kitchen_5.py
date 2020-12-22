@@ -14,7 +14,7 @@ dhtml('Pandas Data to H5Py Data')
 # Commented out IPython magic to ensure Python compatibility.
 import h5py,pandas as pd
 from IPython.display import display,HTML
-def df2h52df(df,file_name):
+def df2h52df(df,file_name,num):
     thp=[('font-size','15px'),('text-align','center'),
          ('font-weight','bold'),('font-family','times'),
          ('padding','5px 5px'),('color','slategray'),
@@ -43,7 +43,7 @@ def df2h52df(df,file_name):
             series_list+=[series]
         df_new=pd.concat(series_list,axis=1)
         f.close()
-    display(df_new.head().T.\
+    display(df_new.head(num).T.\
             style.set_table_styles(style_dict))
 
 dhtml('Data from External HTML Sources')
@@ -55,7 +55,7 @@ exchange_rates=pd.read_html(url)[0]\
 .drop('Chart',axis=1)
 exchange_rates.head(5).T
 
-exchange_rates_new=df2h52df(exchange_rates,file_name)
+exchange_rates_new=df2h52df(exchange_rates,file_name,5)
 
 dhtml('Data from External CSV Sources')
 
@@ -65,7 +65,7 @@ file_name='ufc_fights.h5'
 ufc_fights=pd.read_csv(url).dropna()
 ufc_fights.head(5).T
 
-ufc_fights_new=df2h52df(ufc_fights,file_name)
+ufc_fights_new=df2h52df(ufc_fights,file_name,5)
 
 dhtml('Data from External JSON Sources')
 
@@ -77,6 +77,20 @@ fl=['dbn','total_students','graduation_rate','attendance_rate',
     'latitude','longitude','city','council_district']
 school_explorer=school_explorer[fl]\
 .dropna().astype({'council_district':'int'})
-school_explorer.head(5).T
+school_explorer.head(7).T
 
-school_explorer_new=df2h52df(school_explorer,file_name)
+school_explorer_new=df2h52df(school_explorer,file_name,7)
+
+!python3 -m pip install --upgrade pip \
+--user --quiet --no-warn-script-location
+!python3 -m pip install sodapy \
+--user --quiet --no-warn-script-location
+
+from sodapy import Socrata
+client=Socrata('data.cityofnewyork.us',None)
+nyc_projects=client.get('2xh6-psuq',limit=2000)
+nyc_projects=pd.DataFrame\
+.from_records(nyc_projects).dropna()
+nyc_projects.head(2).T
+
+nyc_projects_new=df2h52df(nyc_projects,file_name,2)
