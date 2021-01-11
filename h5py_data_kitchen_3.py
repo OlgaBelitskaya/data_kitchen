@@ -17,8 +17,7 @@ files_path1='../input/classification-of-handwritten-letters/'+\
 img_size1=32
 h5file1='Letters'+str(img_size1)+'.h5'
 names1=[['lowercase','uppercase'],
-        [s for s in 
-         u'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'],
+        [s for s in u'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'],
         ['single-colored paper','striped paper',
          'squared paper','graph paper']]
 
@@ -26,14 +25,12 @@ data2h5file(h5file1,files_path1,img_size1,names1,
             preprocess=True,grayscale=False)
 
 [names1,x_train1,x_valid1,x_test1,
- y_train1,y_valid1,y_test1,
  y_train1,y_valid1,y_test1]=\
 h5file2data(h5file1,cmap='Pastel1')
 
 display_images(x_train1,y_train1,names1,9)
 
-files_path3='../input/style-color-images/'+\
-            'zip_styles/'
+files_path3='../input/style-color-images/zip_styles/'
 img_size3=150
 h5file3='Styles'+str(img_size3)+'.h5'
 names3=[['Christian Louboutin','Chanel',
@@ -47,7 +44,6 @@ data2h5file(h5file3,files_path3,img_size3,names3,
             preprocess=True,grayscale=False)
 
 [names3,x_train3,x_valid3,x_test3,
- y_train3,y_valid3,y_test3,
  y_train3,y_valid3,y_test3]=\
 h5file2data(h5file3,cmap='Pastel1')
 
@@ -67,7 +63,6 @@ data2h5file(h5file4,files_path4,img_size4,names4,
             preprocess=True,grayscale=False)
 
 [names4,x_train4,x_valid4,x_test4,
- y_train4,y_valid4,y_test4,
  y_train4,y_valid4,y_test4]=\
 h5file2data(h5file4,cmap='Pastel1')
 
@@ -75,8 +70,7 @@ display_images(x_train4,y_train4,names4,9)
 
 dhtml('Data Type #4 => Multi-Labeled Draw Files (PNG)')
 
-files_path2='../input/art-pictogram/'+\
-            'pictograms/'
+files_path2='../input/art-pictogram/pictograms/'
 img_size2=64
 h5file2='Pictograms'+str(img_size2)+'.h5'
 names2=[['pictogram','contour','sketch'],
@@ -89,7 +83,6 @@ data2h5file(h5file2,files_path2,img_size2,names2,
             preprocess=False,grayscale=False)
 
 [names2,x_train2,x_valid2,x_test2,
- y_train2,y_valid2,y_test2,
  y_train2,y_valid2,y_test2]=\
 h5file2data(h5file2,cmap='Pastel1')
 
