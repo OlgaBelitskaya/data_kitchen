@@ -18,16 +18,16 @@ import os,zipfile,cv2
 def get_files(dir_name,files_pre):
     files_list=sorted(os.listdir(dir_name))
     input_files=[f for f in files_list 
-                 if (f[-4:]=='.jpg' and files_pre==f[:16])]
+                 if (f[-4:]=='.jpg' and files_pre==f[:19])]
     return input_files
 N=33
 dir_name='../input/object-detection/'
-files_pre_list=['letters_01_'+'%02d'%l+'_02' 
+files_pre_list=['bq_letters_01_'+'%02d'%l+'_00' 
                 for l in range(N)]
 input_files_list=[]
 input_files_list+=[get_files(dir_name,files_pre_list[l])
                    for l in range(N)]
-display(pd.DataFrame(input_files_list).head())
+display(pd.DataFrame(input_files_list).head(3))
 sum([len(input_files_list[i]) for i in range(N)])
 
 dhtml('Lists of Objects')
@@ -35,7 +35,7 @@ dhtml('Lists of Objects')
 def get_edges(file):
     img=cv2.imread(file)   
     gray_img=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    edges=cv2.Canny(gray_img,10,160) 
+    edges=cv2.Canny(gray_img,10,150) 
     cv2.waitKey(0)
     return img,gray_img,edges
 img_list,gray_img_list,edges_list=[],[],[]
@@ -239,7 +239,7 @@ dhtml('The Python Recipe')
 # def get_files(dir_name,files_pre):
 #     files_list=sorted(os.listdir(dir_name))
 #     input_files=[f for f in files_list 
-#                  if (f[-4:]=='.jpg' and files_pre==f[:16])]
+#                  if (f[-4:]=='.jpg' and files_pre==f[:19])]
 #     return input_files
 # 
 # def get_edges(file):
@@ -328,7 +328,7 @@ dhtml('The Python Recipe')
 # 
 # N=33
 # dir_name='../input/object-detection/'
-# files_pre_list=['letters_01_'+'%02d'%l+'_02' 
+# files_pre_list=['bq_letters_01_'+'%02d'%l+'_00' 
 #                 for l in range(N)]
 # 
 # def many_objects2images(dir_name=dir_name,
