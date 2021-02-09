@@ -11,30 +11,31 @@ Original file is located at
 # %run ../input/python-recipes/dhtml.py
 dhtml('Lists of Image Files')
 
-import numpy as np,pylab as pl
+import pandas as pd,numpy as np,pylab as pl
+from IPython.display import display,HTML
 import os,zipfile,cv2
 
 def get_files(dir_name,files_pre):
     files_list=sorted(os.listdir(dir_name))
     input_files=[f for f in files_list 
-                 if (f[-4:]=='.jpg' and files_pre==f[:-7])]
+                 if (f[-4:]=='.jpg' and files_pre==f[:16])]
     return input_files
-
-N=27
+N=33
 dir_name='../input/object-detection/'
-files_pre_list=['letters_01_'+'%02d'%l+'_00' 
+files_pre_list=['letters_01_'+'%02d'%l+'_02' 
                 for l in range(N)]
 input_files_list=[]
 input_files_list+=[get_files(dir_name,files_pre_list[l])
                    for l in range(N)]
-print(input_files_list)
+display(pd.DataFrame(input_files_list).head())
+sum([len(input_files_list[i]) for i in range(N)])
 
 dhtml('Lists of Objects')
 
 def get_edges(file):
     img=cv2.imread(file)   
     gray_img=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    edges=cv2.Canny(gray_img,10,120) 
+    edges=cv2.Canny(gray_img,10,160) 
     cv2.waitKey(0)
     return img,gray_img,edges
 img_list,gray_img_list,edges_list=[],[],[]
@@ -54,9 +55,9 @@ print([len(img_list[l]) for l in range(len(img_list))])
 
 def display2images(img1,img2):
     fig=pl.figure(figsize=(10,10))
-    ax=fig.add_subplot(1,2,1)
+    ax=fig.add_subplot(2,1,1)
     pl.imshow(img1,cmap='Greys') 
-    ax=fig.add_subplot(1,2,2)
+    ax=fig.add_subplot(2,1,2)
     pl.imshow(img2,cmap='Greys')
     pl.show()
 randi=np.random.randint(0,N,3)
@@ -238,7 +239,7 @@ dhtml('The Python Recipe')
 # def get_files(dir_name,files_pre):
 #     files_list=sorted(os.listdir(dir_name))
 #     input_files=[f for f in files_list 
-#                  if (f[-4:]=='.jpg' and files_pre==f[:-7])]
+#                  if (f[-4:]=='.jpg' and files_pre==f[:16])]
 #     return input_files
 # 
 # def get_edges(file):
@@ -325,9 +326,9 @@ dhtml('The Python Recipe')
 #             files_list_out+=[curr_file_list_out]
 #     return files_list_out
 # 
-# N=27
+# N=33
 # dir_name='../input/object-detection/'
-# files_pre_list=['letters_01_'+'%02d'%l+'_00' 
+# files_pre_list=['letters_01_'+'%02d'%l+'_02' 
 #                 for l in range(N)]
 # 
 # def many_objects2images(dir_name=dir_name,
